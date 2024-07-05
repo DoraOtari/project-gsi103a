@@ -20,8 +20,6 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        shadowColor: Colors.black,
-        elevation: 2,
         title:const Text('Whatsapp',style: TextStyle(
           color: Colors.green,
           fontSize: 28.0,
@@ -81,20 +79,47 @@ class HalamanPertama extends StatelessWidget {
   }
 }
 
-class HalamanKedua extends StatelessWidget {
+class HalamanKedua extends StatefulWidget {
   const HalamanKedua({super.key});
+
+  @override
+  State<HalamanKedua> createState() => _HalamanKeduaState();
+}
+
+class _HalamanKeduaState extends State<HalamanKedua> {
+  bool isFavorit = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body:const Center(
-        child: Column(
-          children: [
-            Text('ini halaman kedua'),
-          ],
-        ),
-      ),
-    );
+      body: GridView.builder(
+        clipBehavior: Clip.antiAlias,
+        padding:const EdgeInsets.symmetric(horizontal: 12),
+        gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          crossAxisCount: 2),
+        itemCount: 12,
+          itemBuilder: (context, index) => 
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: GridTile(
+              footer: Container(
+                height: 38,
+                alignment: Alignment.centerRight,
+                color: Colors.black.withOpacity(0.5),
+                child: IconButton(
+                  onPressed: () => setState(() => isFavorit = !isFavorit),
+                  icon: Icon(
+                    isFavorit ? Icons.favorite : Icons.favorite_border, 
+                    color: Colors.pink,
+                    size: 34,)
+                    )
+                ),
+              child: Image.network('https://picsum.photos/id/${index+8*3}/200')
+              )
+            )
+          )
+      );
   }
 }
