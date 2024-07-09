@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-void main(){
-  runApp(const MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home:  MyApp()));
+void main() {
+  runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -20,32 +18,33 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:const Text('Whatsapp',style: TextStyle(
-          color: Colors.green,
-          fontSize: 28.0,
-          fontWeight: FontWeight.bold),), 
-        actions:const [
-          Icon(Icons.more_vert)
-        ],),
-      body:<Widget>[
-            const HalamanPertama(),
-            const HalamanKedua(),
-          ][halSaatIni],
+        title: const Text(
+          'Whatsapp',
+          style: TextStyle(
+              color: Colors.green, fontSize: 28.0, fontWeight: FontWeight.bold),
+        ),
+        actions: const [Icon(Icons.more_vert)],
+      ),
+      body: <Widget>[
+        const HalamanPertama(),
+        const HalamanKedua(),
+      ][halSaatIni],
       bottomNavigationBar: NavigationBar(
         selectedIndex: halSaatIni,
         onDestinationSelected: (int index) => setState(() {
           halSaatIni = index;
         }),
         indicatorColor: Colors.green.shade200,
-        destinations:const <Widget>[
+        destinations: const <Widget>[
           NavigationDestination(
-            icon: Icon(Icons.home_filled,), 
-            label: 'Page Satu'),
+              icon: Icon(
+                Icons.home_filled,
+              ),
+              label: 'Page Satu'),
           NavigationDestination(
-            icon: Icon(Icons.picture_in_picture), 
-            label: 'Page Dua'),
+              icon: Icon(Icons.picture_in_picture), label: 'Page Dua'),
         ],
-        ),
+      ),
     );
   }
 }
@@ -55,18 +54,18 @@ class HalamanPertama extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  ListView.builder(
+    return ListView.builder(
       itemCount: 12,
       itemBuilder: (context, index) {
-       return ListTile(
+        return ListTile(
           leading: CircleAvatar(
-            foregroundImage: NetworkImage('https://picsum.photos/id/${index*3}/200')
-            ),
+              foregroundImage:
+                  NetworkImage('https://picsum.photos/id/${index * 3}/200')),
           title: Text('Jili the kid'),
-          subtitle: Text('pinjam dulu ${index+1}00 besok ganti'),
+          subtitle: Text('pinjam dulu ${index + 1}00 besok ganti'),
           trailing: Column(
             children: [
-              Text('${index+4}.51'),
+              Text('${index + 4}.51'),
               Badge.count(
                 count: 1,
                 backgroundColor: Colors.green,
@@ -87,39 +86,81 @@ class HalamanKedua extends StatefulWidget {
 }
 
 class _HalamanKeduaState extends State<HalamanKedua> {
-  bool isFavorit = false;
+  List<bool> isFavorit = List.generate(
+    12,
+    (_) => false,
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GridView.builder(
-        clipBehavior: Clip.antiAlias,
-        padding:const EdgeInsets.symmetric(horizontal: 12),
-        gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          crossAxisCount: 2),
-        itemCount: 12,
-          itemBuilder: (context, index) => 
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: GridTile(
-              footer: Container(
-                height: 38,
-                alignment: Alignment.centerRight,
-                color: Colors.black.withOpacity(0.5),
-                child: IconButton(
-                  onPressed: () => setState(() => isFavorit = !isFavorit),
-                  icon: Icon(
-                    isFavorit ? Icons.favorite : Icons.favorite_border, 
-                    color: Colors.pink,
-                    size: 34,)
-                    )
-                ),
-              child: Image.network('https://picsum.photos/id/${index+8*3}/200')
-              )
+        body: GridView.builder(
+            clipBehavior: Clip.antiAlias,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                mainAxisSpacing: 12, crossAxisSpacing: 12, crossAxisCount: 2),
+            itemCount: 12,
+            itemBuilder: (context, index) {
+              return ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: GridTile(
+                      footer: GestureDetector(
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HalamanTiga(),
+                            )),
+                        child: Container(
+                            height: 38,
+                            alignment: Alignment.centerRight,
+                            color: Colors.black.withOpacity(0.5),
+                            child: IconButton(
+                                onPressed: () => setState(() {
+                                      isFavorit[index] = !isFavorit[index];
+                                    }),
+                                icon: Icon(
+                                  isFavorit[index]
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: Colors.pink,
+                                  size: 34,
+                                ))),
+                      ),
+                      child: Image.network(
+                          'https://picsum.photos/id/${index + 8 * 3}/200')));
+            }));
+  }
+}
+
+class HalamanTiga extends StatelessWidget {
+  const HalamanTiga({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Halaman Tiga'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Will you marry Me',
+              style: TextStyle(fontSize: 36),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Ngak')),
+                ElevatedButton(onPressed: () {}, child: Text('Mau..')),
+              ],
             )
-          )
-      );
+          ],
+        ),
+      ),
+    );
   }
 }
