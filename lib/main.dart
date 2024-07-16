@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/store.dart';
 
 void main() {
   runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()));
@@ -28,6 +29,7 @@ class _MyAppState extends State<MyApp> {
       body: <Widget>[
         const HalamanPertama(),
         const HalamanKedua(),
+        const MyStore(),
       ][halSaatIni],
       bottomNavigationBar: NavigationBar(
         selectedIndex: halSaatIni,
@@ -43,6 +45,7 @@ class _MyAppState extends State<MyApp> {
               label: 'Page Satu'),
           NavigationDestination(
               icon: Icon(Icons.picture_in_picture), label: 'Page Dua'),
+          NavigationDestination(icon: Icon(Icons.store), label: 'My Store')
         ],
       ),
     );
@@ -145,7 +148,7 @@ class HalamanTiga extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Will you marry Me',
               style: TextStyle(fontSize: 36),
             ),
@@ -155,7 +158,20 @@ class HalamanTiga extends StatelessWidget {
                 ElevatedButton(
                     onPressed: () => Navigator.pop(context),
                     child: const Text('Ngak')),
-                ElevatedButton(onPressed: () {}, child: Text('Mau..')),
+                ElevatedButton(
+                    onPressed: () {
+                      final tinggiLayar = MediaQuery.of(context).size.height;
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          margin: EdgeInsets.only(bottom: tinggiLayar * 0.8),
+                          backgroundColor: Colors.deepOrangeAccent,
+                          showCloseIcon: true,
+                          content: const Text(
+                            'Ayo Gas 25-05-2025',
+                            style: TextStyle(fontSize: 18),
+                          )));
+                    },
+                    child: const Text('Mau..')),
               ],
             )
           ],
