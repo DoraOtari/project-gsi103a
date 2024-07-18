@@ -6,6 +6,7 @@ class Produk {
   final String image;
   final num rate;
   final int count;
+  final String category;
 
   Produk({
     required this.id,
@@ -15,9 +16,10 @@ class Produk {
     required this.image,
     required this.rate,
     required this.count,
+    required this.category
   });
 
-  factory Produk.fromJson(Map<String,dynamic> json){
+  factory Produk.fromJson(Map<String, dynamic> json) {
     return Produk(
       id: json['id'],
       title: json['title'],
@@ -26,6 +28,7 @@ class Produk {
       image: json['image'],
       rate: json['rating']['rate'],
       count: json['rating']['count'],
-      );
+      category: json['category']
+    );
   }
 }
