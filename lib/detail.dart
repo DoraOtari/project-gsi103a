@@ -1,20 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/format_rupiah.dart';
+import 'package:myapp/keranjang.dart';
 import 'package:myapp/produk.dart';
 import 'package:myapp/provider.dart';
+import 'package:myapp/provider_keranjang.dart';
+import 'package:provider/provider.dart';
 
 class DetailPage extends StatelessWidget {
   const DetailPage({super.key, required this.data});
 
   final Produk data;
 
-  void _kembali(context) {
-    Navigator.pop(context);
+  void _pindahKeranjang(context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => KeranjangPage(),
+        ));
+  }
+
+  void _masukKeranjang(context, produk) {
+    Provider.of<Keranjang>(context, listen: false).tambah(produk);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: ElevatedButton.icon(
+        style: const ButtonStyle(
+          foregroundColor: WidgetStatePropertyAll(Colors.white),
+          backgroundColor: WidgetStatePropertyAll(Colors.orange),
+        ),
+        onPressed: () => _masukKeranjang(context, data),
+        label: Text('Add'),
+        icon: Icon(Icons.add),
+      ),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () => _pindahKeranjang(context),
+              icon: Badge(
+                label: Consumer<Keranjang>(
+                  builder: (context, value, child) =>
+                      Text(value.jumlahProduk.toString()),
+                ),
+                child: Icon(Icons.shopping_bag),
+              ))
+        ],
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 40),
@@ -23,14 +56,7 @@ class DetailPage extends StatelessWidget {
             children: [
               SizedBox(
                 height: 200,
-                child: GridTile(
-                  header: Align(
-                    alignment: Alignment.topLeft,
-                    child: IconButton(
-                      onPressed: () => _kembali(context),
-                      icon: const Icon(Icons.arrow_back_ios),
-                    ),
-                  ),
+                child: Align(
                   child: Image.network(
                     data.image,
                   ),
@@ -86,6 +112,14 @@ class DetailPage extends StatelessWidget {
 class BagianProdukSerupa extends StatelessWidget {
   const BagianProdukSerupa({super.key, required this.category});
   final String category;
+  void _pindahDetail(context, produk) {
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DetailPage(data: produk),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -102,18 +136,21 @@ class BagianProdukSerupa extends StatelessWidget {
               itemCount: listProduk.length,
               itemBuilder: (context, index) {
                 Produk produk = listProduk[index];
-                return Container(
-                  width: 130,
-                  child: Card(
-                    child: Column(
-                      children: [
-                        Expanded(child: Image.network(produk.image)),
-                        Text(
-                          produk.title,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(formatRupiah(produk.price)),
-                      ],
+                return GestureDetector(
+                  onTap: () => _pindahDetail(context, produk),
+                  child: SizedBox(
+                    width: 130,
+                    child: Card(
+                      child: Column(
+                        children: [
+                          Expanded(child: Image.network(produk.image)),
+                          Text(
+                            produk.title,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(formatRupiah(produk.price)),
+                        ],
+                      ),
                     ),
                   ),
                 );
