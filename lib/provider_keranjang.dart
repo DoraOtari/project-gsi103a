@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:myapp/format_rupiah.dart';
 import 'package:myapp/produk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,8 +12,18 @@ class Keranjang extends ChangeNotifier {
 
   int get jumlahProduk => _listProduk.length;
 
+  num get totalBayar => _hitungTotal();
+
   Keranjang() {
     _muatData();
+  }
+
+  num _hitungTotal() {
+    num totalBayar = 0;
+    for (var produk in _listProduk) {
+      totalBayar += produk.price;
+    }
+    return totalBayar;
   }
 
   void _muatData() async {

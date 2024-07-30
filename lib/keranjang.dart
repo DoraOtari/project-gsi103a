@@ -57,7 +57,7 @@ class KeranjangPage extends StatelessWidget {
                           color: Colors.white,
                         ),
                       ),
-                      key: ValueKey(produk.id),
+                      key: GlobalKey(),
                       child: ListTile(
                         leading: AspectRatio(
                           aspectRatio: 3 / 4,
@@ -76,18 +76,22 @@ class KeranjangPage extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const Divider(),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Total Barang'),
-                Text('0'),
+                const Text('Total Barang'),
+                Consumer<Keranjang>(
+                    builder: (context, value, child) =>
+                        Text('${value.jumlahProduk}')),
               ],
             ),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Total Bayar'),
-                Text('0'),
+                Consumer<Keranjang>(
+                    builder: (context, value, child) =>
+                        Text(formatRupiah(value.totalBayar))),
               ],
             ),
           ],
