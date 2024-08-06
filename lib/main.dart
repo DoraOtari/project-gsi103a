@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/alamat.dart';
 import 'package:myapp/provider_keranjang.dart';
 import 'package:myapp/store.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,9 @@ void main() {
       providers: [
         ChangeNotifierProvider(
           create: (context) => Keranjang(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AlamatProvider(),
         )
       ],
       child:

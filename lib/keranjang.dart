@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/alamat.dart';
 import 'package:myapp/format_rupiah.dart';
 import 'package:myapp/produk.dart';
 import 'package:myapp/provider_keranjang.dart';
 import 'package:provider/provider.dart';
 
 class KeranjangPage extends StatelessWidget {
-  const KeranjangPage({super.key});
-
+  KeranjangPage({super.key});
+  final _namaPenerimaCon = TextEditingController();
+  final _alamatPengirimanCon = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,6 +73,26 @@ class KeranjangPage extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(
+              height: 80,
+              child: Consumer<AlamatProvider>(
+                builder: (context, provider, child) => ListView.builder(
+                  itemCount: provider.listAlamat.length,
+                  itemBuilder: (context, index) {
+                    Alamat alamat = provider.listAlamat[index];
+                    return Card(
+                      child: Column(
+                        children: [
+                          const Text('Alamat Pengiriman'),
+                          Text(alamat.namaPenerima),
+                          Text(alamat.alamatPengiriman),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
             const Text(
               'Detail Pembayaran',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -95,6 +117,77 @@ class KeranjangPage extends StatelessWidget {
               ],
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: InkWell(
+        onTap: () => showModalBottomSheet(
+          isScrollControlled: true,
+          context: context,
+          builder: (context) => FractionallySizedBox(
+            heightFactor: 0.9,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    width: 100,
+                    child: Divider(
+                      thickness: 5,
+                    ),
+                  ),
+                  const Text(
+                    'Informasi Pemesanan',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  TextFormField(
+                    controller: _namaPenerimaCon,
+                    decoration: InputDecoration(label: Text('Nama Penerima')),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
+                    controller: _alamatPengirimanCon,
+                    maxLines: 3,
+                    decoration: const InputDecoration(
+                      label: Text('Alamat Pengiriman'),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                        onPressed: () async {
+                          Alamat alamat = Alamat.fromMap({
+                            'namaPenerima': _namaPenerimaCon.text,
+                            'alamatPengiriman': _alamatPengirimanCon.text,
+                          });
+                          Provider.of<AlamatProvider>(context, listen: false)
+                              .insertAlamat(alamat);
+                          _namaPenerimaCon.clear();
+                          _alamatPengirimanCon.clear();
+                          Navigator.pop(context);
+                        },
+                        style: const ButtonStyle(
+                            foregroundColor:
+                                WidgetStatePropertyAll(Colors.white),
+                            backgroundColor:
+                                WidgetStatePropertyAll(Colors.orange)),
+                        child: Text('Pesan')),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+        child: Container(
+          alignment: Alignment.center,
+          height: 45,
+          color: Colors.teal,
+          child: const Text(
+            'Buat Pesanan',
+            style: TextStyle(color: Colors.white, fontSize: 24),
+          ),
         ),
       ),
     );
