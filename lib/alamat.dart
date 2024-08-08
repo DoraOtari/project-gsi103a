@@ -5,14 +5,15 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class Alamat {
-  int? id;
-  String namaPenerima;
-  String alamatPengiriman;
+  final int? id;
+  final String namaPenerima;
+  final String alamatPengiriman;
 
   Alamat({this.id, required this.namaPenerima, required this.alamatPengiriman});
 
   factory Alamat.fromMap(Map<String, dynamic> map) {
     return Alamat(
+        id: map['id'],
         namaPenerima: map['namaPenerima'],
         alamatPengiriman: map['alamatPengiriman']);
   }
@@ -70,6 +71,12 @@ class AlamatProvider extends ChangeNotifier {
 
     await db.insert('alamat', alamat.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
+    await _loadData();
+  }
+
+  Future<void> deleteAlamat(Alamat alamat) async {
+    final db = await _koneksiDatabase();
+    await db.delete('alamat', where: 'id = ?', whereArgs: [alamat.id]);
     await _loadData();
   }
 }

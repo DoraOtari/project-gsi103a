@@ -74,19 +74,57 @@ class KeranjangPage extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 80,
+              height: 90,
               child: Consumer<AlamatProvider>(
                 builder: (context, provider, child) => ListView.builder(
                   itemCount: provider.listAlamat.length,
                   itemBuilder: (context, index) {
                     Alamat alamat = provider.listAlamat[index];
-                    return Card(
-                      child: Column(
-                        children: [
-                          const Text('Alamat Pengiriman'),
-                          Text(alamat.namaPenerima),
-                          Text(alamat.alamatPengiriman),
-                        ],
+                    return Dismissible(
+                      direction: DismissDirection.endToStart,
+                      confirmDismiss: (_) async {
+                        bool setuju = await showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            content: Text('Yakin ingin hapus alamat'),
+                            actions: [
+                              TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
+                                  child: Text('Tidak')),
+                              TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(true),
+                                  child: Text('Ya')),
+                            ],
+                          ),
+                        );
+                        return setuju;
+                      },
+                      onDismissed: (_) {
+                        Provider.of<AlamatProvider>(context, listen: false)
+                            .deleteAlamat(alamat);
+                      },
+                      key: GlobalKey(),
+                      child: Card(
+                        child: Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Alamat Pengiriman',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                  'Nama Penerima: ${alamat.namaPenerima.toUpperCase()}'),
+                              Text(
+                                  'Alamat Pengiriman: ${alamat.alamatPengiriman.toUpperCase()}'),
+                            ],
+                          ),
+                        ),
                       ),
                     );
                   },
