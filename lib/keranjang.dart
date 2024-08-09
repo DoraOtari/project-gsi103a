@@ -6,9 +6,8 @@ import 'package:myapp/provider_keranjang.dart';
 import 'package:provider/provider.dart';
 
 class KeranjangPage extends StatelessWidget {
-  KeranjangPage({super.key});
-  final _namaPenerimaCon = TextEditingController();
-  final _alamatPengirimanCon = TextEditingController();
+  const KeranjangPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +73,7 @@ class KeranjangPage extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 90,
+              height: 100,
               child: Consumer<AlamatProvider>(
                 builder: (context, provider, child) => ListView.builder(
                   itemCount: provider.listAlamat.length,
@@ -106,23 +105,32 @@ class KeranjangPage extends StatelessWidget {
                             .deleteAlamat(alamat);
                       },
                       key: GlobalKey(),
-                      child: Card(
-                        child: Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Alamat Pengiriman',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                  'Nama Penerima: ${alamat.namaPenerima.toUpperCase()}'),
-                              Text(
-                                  'Alamat Pengiriman: ${alamat.alamatPengiriman.toUpperCase()}'),
-                            ],
+                      child: GestureDetector(
+                        onTap: () => showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (context) =>
+                              BagianFormAlamat(alamat: alamat),
+                        ),
+                        child: Card(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Alamat Pengiriman',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                    'Nama Penerima: ${alamat.namaPenerima.toUpperCase()}'),
+                                Text(
+                                    'Alamat Pengiriman: ${alamat.alamatPengiriman.toUpperCase()}'),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -161,62 +169,7 @@ class KeranjangPage extends StatelessWidget {
         onTap: () => showModalBottomSheet(
           isScrollControlled: true,
           context: context,
-          builder: (context) => FractionallySizedBox(
-            heightFactor: 0.9,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
-                children: [
-                  const SizedBox(
-                    width: 100,
-                    child: Divider(
-                      thickness: 5,
-                    ),
-                  ),
-                  const Text(
-                    'Informasi Pemesanan',
-                    style: TextStyle(fontSize: 24),
-                  ),
-                  TextFormField(
-                    controller: _namaPenerimaCon,
-                    decoration: InputDecoration(label: Text('Nama Penerima')),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    controller: _alamatPengirimanCon,
-                    maxLines: 3,
-                    decoration: const InputDecoration(
-                      label: Text('Alamat Pengiriman'),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                        onPressed: () async {
-                          Alamat alamat = Alamat.fromMap({
-                            'namaPenerima': _namaPenerimaCon.text,
-                            'alamatPengiriman': _alamatPengirimanCon.text,
-                          });
-                          Provider.of<AlamatProvider>(context, listen: false)
-                              .insertAlamat(alamat);
-                          _namaPenerimaCon.clear();
-                          _alamatPengirimanCon.clear();
-                          Navigator.pop(context);
-                        },
-                        style: const ButtonStyle(
-                            foregroundColor:
-                                WidgetStatePropertyAll(Colors.white),
-                            backgroundColor:
-                                WidgetStatePropertyAll(Colors.orange)),
-                        child: Text('Pesan')),
-                  )
-                ],
-              ),
-            ),
-          ),
+          builder: (context) => BagianFormAlamat(),
         ),
         child: Container(
           alignment: Alignment.center,
@@ -226,6 +179,94 @@ class KeranjangPage extends StatelessWidget {
             'Buat Pesanan',
             style: TextStyle(color: Colors.white, fontSize: 24),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class BagianFormAlamat extends StatefulWidget {
+  const BagianFormAlamat({super.key, this.alamat});
+  final Alamat? alamat;
+
+  @override
+  State<BagianFormAlamat> createState() => _BagianFormAlamatState();
+}
+
+class _BagianFormAlamatState extends State<BagianFormAlamat> {
+  final _namaPenerimaCon = TextEditingController();
+  final _alamatPengirimanCon = TextEditingController();
+
+  @override
+  void initState() {
+    if (widget.alamat != null) {
+      _namaPenerimaCon.text = widget.alamat!.namaPenerima;
+      _alamatPengirimanCon.text = widget.alamat!.alamatPengiriman;
+    }
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FractionallySizedBox(
+      heightFactor: 0.9,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          children: [
+            const SizedBox(
+              width: 100,
+              child: Divider(
+                thickness: 5,
+              ),
+            ),
+            const Text(
+              'Informasi Pemesanan',
+              style: TextStyle(fontSize: 24),
+            ),
+            TextFormField(
+              controller: _namaPenerimaCon,
+              decoration: InputDecoration(label: Text('Nama Penerima')),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            TextFormField(
+              controller: _alamatPengirimanCon,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                label: Text('Alamat Pengiriman'),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                  onPressed: () async {
+                    Alamat alamat = Alamat.fromMap({
+                      'id': widget.alamat!.id,
+                      'namaPenerima': _namaPenerimaCon.text,
+                      'alamatPengiriman': _alamatPengirimanCon.text,
+                    });
+
+                    if (widget.alamat != null) {
+                      Provider.of<AlamatProvider>(context, listen: false)
+                          .updateAlamat(alamat);
+                    } else {
+                      Provider.of<AlamatProvider>(context, listen: false)
+                          .insertAlamat(alamat);
+                    }
+                    _namaPenerimaCon.clear();
+                    _alamatPengirimanCon.clear();
+                    Navigator.pop(context);
+                  },
+                  style: const ButtonStyle(
+                      foregroundColor: WidgetStatePropertyAll(Colors.white),
+                      backgroundColor: WidgetStatePropertyAll(Colors.orange)),
+                  child:
+                      widget.alamat != null ? Text('Update') : Text('Pesan')),
+            )
+          ],
         ),
       ),
     );
