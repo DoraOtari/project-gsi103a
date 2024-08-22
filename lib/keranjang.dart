@@ -242,9 +242,9 @@ class _BagianFormAlamatState extends State<BagianFormAlamat> {
             Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton(
-                  onPressed: () async {
+                  onPressed: () {
                     Alamat alamat = Alamat.fromMap({
-                      'id': widget.alamat!.id,
+                      'id': widget.alamat?.id,
                       'namaPenerima': _namaPenerimaCon.text,
                       'alamatPengiriman': _alamatPengirimanCon.text,
                     });

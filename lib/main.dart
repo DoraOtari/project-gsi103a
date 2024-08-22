@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/alamat.dart';
+import 'package:myapp/guest/login.dart';
 import 'package:myapp/provider_keranjang.dart';
 import 'package:myapp/store.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +16,7 @@ void main() {
         )
       ],
       child:
-          const MaterialApp(debugShowCheckedModeBanner: false, home: MyApp())));
+           MaterialApp(debugShowCheckedModeBanner: false, home: LoginPage())));
 }
 
 class MyApp extends StatefulWidget {

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "845262465359",
+    "project_id": "flutter-palcom-5cb37",
+    "storage_bucket": "flutter-palcom-5cb37.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:845262465359:android:5cdab2382f06193256bd3a",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-g96EHC7DEj4qRmU_xJZvF5bVaYI6aLA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
