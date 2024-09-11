@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/format_rupiah.dart';
 import 'package:myapp/keranjang.dart';
 import 'package:myapp/produk.dart';
-import 'package:myapp/provider.dart';
+import 'package:myapp/provider_produk.dart';
 import 'package:myapp/provider_keranjang.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +15,7 @@ class DetailPage extends StatelessWidget {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => KeranjangPage(),
+          builder: (context) => const KeranjangPage(),
         ));
   }
 
@@ -32,8 +32,8 @@ class DetailPage extends StatelessWidget {
           backgroundColor: WidgetStatePropertyAll(Colors.orange),
         ),
         onPressed: () => _masukKeranjang(context, data),
-        label: Text('Add'),
-        icon: Icon(Icons.add),
+        label: const Text('Add'),
+        icon: const Icon(Icons.add),
       ),
       appBar: AppBar(
         actions: [
@@ -44,13 +44,13 @@ class DetailPage extends StatelessWidget {
                   builder: (context, value, child) =>
                       Text(value.jumlahProduk.toString()),
                 ),
-                child: Icon(Icons.shopping_bag),
+                child: const Icon(Icons.shopping_bag),
               ))
         ],
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 40),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -65,11 +65,12 @@ class DetailPage extends StatelessWidget {
               Text(data.category.toUpperCase()),
               Text(
                 data.title,
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
               Text(
                 formatRupiah(data.price),
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -89,7 +90,8 @@ class DetailPage extends StatelessWidget {
               Card(
                 color: Colors.amber.shade100,
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   child: Text(data.description),
                 ),
               ),
@@ -109,9 +111,22 @@ class DetailPage extends StatelessWidget {
 }
 
 // tampilan produk serupa
-class BagianProdukSerupa extends StatelessWidget {
+class BagianProdukSerupa extends StatefulWidget {
   const BagianProdukSerupa({super.key, required this.category});
   final String category;
+
+  @override
+  State<BagianProdukSerupa> createState() => _BagianProdukSerupaState();
+}
+
+class _BagianProdukSerupaState extends State<BagianProdukSerupa> {
+  @override
+  void initState() {
+    final provider = Provider.of<ProviderProduk>(context, listen: false);
+    provider.ambilProdukKategori(widget.category);
+    super.initState();
+  }
+
   void _pindahDetail(context, produk) {
     Navigator.pushReplacement(
         context,
@@ -123,19 +138,20 @@ class BagianProdukSerupa extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 130,
-      child: FutureBuilder(
-          future: ambilProdukKategori(category),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: LinearProgressIndicator());
+        height: 130,
+        child: Consumer<ProviderProduk>(
+          builder: (context, providerProduk, child) {
+            if (providerProduk.isLoading) {
+              return const Center(
+                child: LinearProgressIndicator(),
+              );
             }
-            List<Produk> listProduk = snapshot.data!;
+
             return ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: listProduk.length,
+              itemCount: providerProduk.jumlahProdukKategori,
               itemBuilder: (context, index) {
-                Produk produk = listProduk[index];
+                Produk produk = providerProduk.listProdukKategori[index];
                 return GestureDetector(
                   onTap: () => _pindahDetail(context, produk),
                   child: SizedBox(
@@ -156,7 +172,7 @@ class BagianProdukSerupa extends StatelessWidget {
                 );
               },
             );
-          }),
-    );
+          },
+        ));
   }
 }

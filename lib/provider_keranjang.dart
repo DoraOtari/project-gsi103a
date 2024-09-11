@@ -6,8 +6,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Keranjang extends ChangeNotifier {
   List<Produk> _listProduk = [];
+  List<Produk> _listPencarian = [];
 
   List<Produk> get listProduk => _listProduk;
+  List<Produk> get listPencarian => _listPencarian;
 
   int get jumlahProduk => _listProduk.length;
 
@@ -56,5 +58,18 @@ class Keranjang extends ChangeNotifier {
         )
         .toList();
     await prefs.setStringList('listKeranjang', listString);
+  }
+
+  void cariProduk(String namaProduk) {
+    if (namaProduk.isEmpty) {
+      _listPencarian = _listProduk;
+    } else {
+      _listPencarian = _listProduk.where(
+        (produk) {
+          return produk.title.toLowerCase().contains(namaProduk.toLowerCase());
+        },
+      ).toList();
+      notifyListeners();
+    }
   }
 }

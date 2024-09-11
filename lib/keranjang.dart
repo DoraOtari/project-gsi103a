@@ -12,10 +12,10 @@ class KeranjangPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Keranjang'),
+        title: const Text('Keranjang'),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           children: [
             Expanded(
@@ -85,16 +85,16 @@ class KeranjangPage extends StatelessWidget {
                         bool setuju = await showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                            content: Text('Yakin ingin hapus alamat'),
+                            content: const Text('Yakin ingin hapus alamat'),
                             actions: [
                               TextButton(
                                   onPressed: () =>
                                       Navigator.of(context).pop(false),
-                                  child: Text('Tidak')),
+                                  child: const Text('Tidak')),
                               TextButton(
                                   onPressed: () =>
                                       Navigator.of(context).pop(true),
-                                  child: Text('Ya')),
+                                  child: const Text('Ya')),
                             ],
                           ),
                         );
@@ -114,7 +114,7 @@ class KeranjangPage extends StatelessWidget {
                         ),
                         child: Card(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,7 +156,7 @@ class KeranjangPage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Total Bayar'),
+                const Text('Total Bayar'),
                 Consumer<Keranjang>(
                     builder: (context, value, child) =>
                         Text(formatRupiah(value.totalBayar))),
@@ -169,7 +169,7 @@ class KeranjangPage extends StatelessWidget {
         onTap: () => showModalBottomSheet(
           isScrollControlled: true,
           context: context,
-          builder: (context) => BagianFormAlamat(),
+          builder: (context) => const BagianFormAlamat(),
         ),
         child: Container(
           alignment: Alignment.center,
@@ -211,7 +211,7 @@ class _BagianFormAlamatState extends State<BagianFormAlamat> {
     return FractionallySizedBox(
       heightFactor: 0.9,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Column(
           children: [
             const SizedBox(
@@ -226,7 +226,7 @@ class _BagianFormAlamatState extends State<BagianFormAlamat> {
             ),
             TextFormField(
               controller: _namaPenerimaCon,
-              decoration: InputDecoration(label: Text('Nama Penerima')),
+              decoration: const InputDecoration(label: Text('Nama Penerima')),
             ),
             const SizedBox(
               height: 20,
@@ -264,7 +264,7 @@ class _BagianFormAlamatState extends State<BagianFormAlamat> {
                       foregroundColor: WidgetStatePropertyAll(Colors.white),
                       backgroundColor: WidgetStatePropertyAll(Colors.orange)),
                   child:
-                      widget.alamat != null ? Text('Update') : Text('Pesan')),
+                      widget.alamat != null ? const Text('Update') : const Text('Pesan')),
             )
           ],
         ),

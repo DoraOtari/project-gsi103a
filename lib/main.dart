@@ -1,7 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/alamat.dart';
+import 'package:myapp/format_rupiah.dart';
 import 'package:myapp/guest/login.dart';
+import 'package:myapp/keranjang.dart';
+import 'package:myapp/produk.dart';
 import 'package:myapp/provider_keranjang.dart';
+import 'package:myapp/provider_produk.dart';
 import 'package:myapp/store.dart';
 import 'package:provider/provider.dart';
 
@@ -9,14 +15,19 @@ void main() {
   runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(
+          create: (context) => ProviderProduk(),
+        ),
+        ChangeNotifierProvider(
           create: (context) => Keranjang(),
         ),
         ChangeNotifierProvider(
           create: (context) => AlamatProvider(),
         )
       ],
-      child:
-           MaterialApp(debugShowCheckedModeBanner: false, home: LoginPage())));
+      child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(scaffoldBackgroundColor: Colors.white),
+          home: const LoginPage())));
 }
 
 class MyApp extends StatefulWidget {
@@ -29,6 +40,28 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int halSaatIni = 0;
 
+  void _keluar(context) async {
+    await Firebase.initializeApp();
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const LoginPage(),
+        ));
+  }
+
+  void _pindahKeranjang(context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const KeranjangPage(),
+        ));
+  }
+
+  void _cariBarang() {
+    showSearch(context: context, delegate: CariProduk());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +71,20 @@ class _MyAppState extends State<MyApp> {
           style: TextStyle(
               color: Colors.green, fontSize: 28.0, fontWeight: FontWeight.bold),
         ),
-        actions: const [Icon(Icons.more_vert)],
+        actions: [
+          IconButton(
+              onPressed: () => _cariBarang(), icon: const Icon(Icons.search)),
+          IconButton(
+              onPressed: () => _pindahKeranjang(context),
+              icon: Badge(
+                  label: Consumer<Keranjang>(
+                      builder: (context, keranjang, child) =>
+                          Text(keranjang.jumlahProduk.toString())),
+                  child: const Icon(Icons.shopping_bag_outlined))),
+          IconButton(
+              onPressed: () => _keluar(context),
+              icon: const Icon(Icons.logout_rounded)),
+        ],
       ),
       body: <Widget>[
         const HalamanPertama(),
@@ -78,7 +124,7 @@ class HalamanPertama extends StatelessWidget {
           leading: CircleAvatar(
               foregroundImage:
                   NetworkImage('https://picsum.photos/id/${index * 3}/200')),
-          title: Text('Jili the kid'),
+          title: const Text('Jili the kid'),
           subtitle: Text('pinjam dulu ${index + 1}00 besok ganti'),
           trailing: Column(
             children: [
@@ -125,7 +171,7 @@ class _HalamanKeduaState extends State<HalamanKedua> {
                         onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => HalamanTiga(),
+                              builder: (context) => const HalamanTiga(),
                             )),
                         child: Container(
                             height: 38,
@@ -156,7 +202,7 @@ class HalamanTiga extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Halaman Tiga'),
+        title: const Text('Halaman Tiga'),
       ),
       body: Center(
         child: Column(
@@ -192,5 +238,74 @@ class HalamanTiga extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class CariProduk extends SearchDelegate {
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(onPressed: () => query = '', icon: const Icon(Icons.clear))
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => close(context, null));
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    final keranjang = context.read<Keranjang>();
+    keranjang.cariProduk(query);
+    return Consumer<Keranjang>(
+      builder: (context, keranjang, child) {
+        if (keranjang.listPencarian.isEmpty) {
+          return const Center(child: Text('Tidak ada produk yang ditemukan'));
+        }
+
+        return ListView.builder(
+          itemCount: keranjang.listPencarian.length,
+          itemBuilder: (context, index) {
+            final Produk produk = keranjang.listPencarian[index];
+            return ListTile(
+              leading: AspectRatio(
+                aspectRatio: 3 / 4,
+                child: Image.network(produk.image),
+              ),
+              title: Text(produk.title),
+              subtitle: Text(formatRupiah(produk.price)),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final keranjang = context.read<Keranjang>();
+    keranjang.cariProduk(query);
+    return Consumer<Keranjang>(builder: (context, keranjang, child) {
+      if (keranjang.listPencarian.isEmpty) {
+        return const Center(child: Text('Tidak ada saran produk.'));
+      }
+
+      return ListView.builder(
+        itemCount: keranjang.listPencarian.length,
+        itemBuilder: (context, index) {
+          final produk = keranjang.listPencarian[index];
+          return ListTile(
+            title: Text(produk.title),
+            onTap: () {
+              query = produk.title;
+              showResults(context);
+            },
+          );
+        },
+      );
+    });
   }
 }
