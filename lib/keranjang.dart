@@ -263,8 +263,9 @@ class _BagianFormAlamatState extends State<BagianFormAlamat> {
                   style: const ButtonStyle(
                       foregroundColor: WidgetStatePropertyAll(Colors.white),
                       backgroundColor: WidgetStatePropertyAll(Colors.orange)),
-                  child:
-                      widget.alamat != null ? const Text('Update') : const Text('Pesan')),
+                  child: widget.alamat != null
+                      ? const Text('Update')
+                      : const Text('Pesan')),
             )
           ],
         ),
